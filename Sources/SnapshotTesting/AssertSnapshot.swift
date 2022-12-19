@@ -1,5 +1,3 @@
-import XCTest
-
 /// Enhances failure messages with a command line diff tool expression that can be copied and pasted into a terminal.
 ///
 ///     diffTool = "ksdiff"
@@ -173,7 +171,6 @@ public func verifySnapshot<Value, Format>(
   )
   -> String? {
 
-    CleanCounterBetweenTestCases.registerIfNeeded()
     let recording = recording || isRecording
 
     do {
@@ -339,25 +336,4 @@ func sanitizePathComponent(_ string: String) -> String {
   return string
     .replacingOccurrences(of: "\\W+", with: "-", options: .regularExpression)
     .replacingOccurrences(of: "^-|-$", with: "", options: .regularExpression)
-}
-
-// We need to clean counter between tests executions in order to support test-iterations.
-private class CleanCounterBetweenTestCases: NSObject, XCTestObservation {
-    private static var registered = false
-    private static var registerQueue = DispatchQueue(label: "co.pointfree.SnapshotTesting.testObserver")
-
-    static func registerIfNeeded() {
-      registerQueue.sync {
-        if !registered {
-          registered = true
-          XCTestObservationCenter.shared.addTestObserver(CleanCounterBetweenTestCases())
-        }
-      }
-    }
-
-    func testCaseDidFinish(_ testCase: XCTestCase) {
-      counterQueue.sync {
-        counterMap = [:]
-      }
-    }
 }

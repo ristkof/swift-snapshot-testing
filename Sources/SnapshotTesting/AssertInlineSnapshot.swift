@@ -1,5 +1,3 @@
-import XCTest
-
 /// Asserts that a given value matches a string literal.
 ///
 /// Note: Empty `reference` will be replaced automatically with generated output.
