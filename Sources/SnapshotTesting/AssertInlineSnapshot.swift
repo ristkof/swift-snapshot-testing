@@ -39,7 +39,7 @@ public func _assertInlineSnapshot<Value>(
     line: line
   )
   guard let message = failure else { return }
-  XCTFail(message, file: file, line: line)
+  assert(false, message)
 }
 
 /// Verifies that a given value matches a string literal.
@@ -77,24 +77,24 @@ public func _verifyInlineSnapshot<Value>(
         optionalDiffable = b
         tookSnapshot.fulfill()
       }
-      let result = XCTWaiter.wait(for: [tookSnapshot], timeout: timeout)
-      switch result {
-      case .completed:
-        break
-      case .timedOut:
-        return """
-          Exceeded timeout of \(timeout) seconds waiting for snapshot.
+      // let result = XCTWaiter.wait(for: [tookSnapshot], timeout: timeout)
+      // switch result {
+      // case .completed:
+      //   break
+      // case .timedOut:
+      //   return """
+      //     Exceeded timeout of \(timeout) seconds waiting for snapshot.
 
-          This can happen when an asynchronously rendered view (like a web view) has not loaded. \
-          Ensure that every subview of the view hierarchy has loaded to avoid timeouts, or, if a \
-          timeout is unavoidable, consider setting the "timeout" parameter of "assertSnapshot" to \
-          a higher value.
-          """
-      case .incorrectOrder, .invertedFulfillment, .interrupted:
-        return "Couldn't snapshot value"
-      @unknown default:
-        return "Couldn't snapshot value"
-      }
+      //     This can happen when an asynchronously rendered view (like a web view) has not loaded. \
+      //     Ensure that every subview of the view hierarchy has loaded to avoid timeouts, or, if a \
+      //     timeout is unavoidable, consider setting the "timeout" parameter of "assertSnapshot" to \
+      //     a higher value.
+      //     """
+      // case .incorrectOrder, .invertedFulfillment, .interrupted:
+      //   return "Couldn't snapshot value"
+      // @unknown default:
+      //   return "Couldn't snapshot value"
+      // }
 
       let trimmingChars = CharacterSet.whitespacesAndNewlines.union(CharacterSet(charactersIn: "\u{FEFF}"))
       guard let diffable = optionalDiffable?.trimmingCharacters(in: trimmingChars) else {
@@ -142,19 +142,6 @@ public func _verifyInlineSnapshot<Value>(
           /// and we don't want to write to the wrong place.
           return nil
         }
-      }
-
-      /// Did not successfully record, so we will fail.
-      if !attachments.isEmpty {
-        #if !os(Linux) && !os(Windows)
-        if ProcessInfo.processInfo.environment.keys.contains("__XCODE_BUILT_PRODUCTS_DIR_PATHS") {
-          XCTContext.runActivity(named: "Attached Failure Diff") { activity in
-            attachments.forEach {
-              activity.add($0)
-            }
-          }
-        }
-        #endif
       }
 
       return """

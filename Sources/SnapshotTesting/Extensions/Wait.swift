@@ -19,8 +19,8 @@ extension Snapshotting {
           DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
             expectation.fulfill()
           }
-          _ = XCTWaiter.wait(for: [expectation], timeout: duration + 1)
-          strategy.snapshot(value).run(callback)
+        //  _ = XCTWaiter.wait(for: [expectation], timeout: duration + 1)
+        //  strategy.snapshot(value).run(callback)
         }
     })
   }
